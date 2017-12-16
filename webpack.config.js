@@ -35,7 +35,7 @@ module.exports = {
         loader: 'file-loader',
         options: {
           name: '[name].[ext]?[hash]',
-          publicPath: './dist/'
+          publicPath: process.env.NODE_ENV === 'production' ? './martian-chess/dist/' : './dist/'
         }
       }
     ]
