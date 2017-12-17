@@ -1,16 +1,18 @@
 <template>
   <div id="app">
-    <main-menu     v-if="stage == 'menu'"/>
-    <martian-chess v-if="stage == 'game'"/>
+    <main-menu      v-if="stage == 'menu'"/>
+    <martian-chess  v-if="stage == 'game'"/>
+    <game-over-menu v-if="stage == 'end'"/>
   </div>
 </template>
 
 <script>
 import MartianChess from './MartianChess.vue'
 import MainMenu from './MainMenu.vue'
+import GameOverMenu from './GameOverMenu.vue'
 
 export default {
-  components: {MartianChess, MainMenu},
+  components: {MartianChess, MainMenu, GameOverMenu},
   computed: {
     stage() { return this.$store.state.stage }
   },

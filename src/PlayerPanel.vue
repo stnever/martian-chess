@@ -1,6 +1,7 @@
 <template>
   <div class="player-panel" :class="cssClass">
     <h1>{{player.name}}</h1>
+    <h2 v-if="player.isWinner">Winner!</h2>
 
     <section>
       <label>Captured pieces (score: {{player.score}})</label>

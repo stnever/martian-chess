@@ -122,8 +122,8 @@ module.exports = {
       state.stage = 'game'
 
       state.players = [
-        {name: 'Player 1', color: 'red' , score: 0, captures: [], territory: [ [0,0], [3,3] ]},
-        {name: 'Player 2', color: 'blue', score: 0, captures: [], territory: [ [4,0], [7,3] ]},
+        {name: 'Player 1', color: 'red' , isWinner: false, score: 0, captures: [], territory: [ [0,0], [3,3] ]},
+        {name: 'Player 2', color: 'blue', isWinner: false, score: 0, captures: [], territory: [ [4,0], [7,3] ]},
         // {name: 'Player 3', color: 'green', captures: [], territory: [ [0,4], [3,7] ]},
         // {name: 'Player 4', color: 'yellow', captures: [], territory: [ [4,4], [7,7] ]}
       ]
@@ -196,12 +196,20 @@ module.exports = {
 
     setActivePlayerIndex: (state, newIndex) => {
       state.activePlayerIndex = newIndex
+    },
+
+    gameOver(state) {
+      state.stage = 'end'
+      _.maxBy(state.players, 'score').isWinner = true
     }
 
   },
 
   actions: {
     squareClicked({commit, state, getters, dispatch}, position) {
+      // Ignora clicks se o jogo já terminou
+      if ( state.stage == 'end' ) return
+
       var cell = cellAt(state.board, position)
 
       // Se não temos uma peça selecionada:
@@ -231,8 +239,15 @@ module.exports = {
           var selectedPiece = cellAt(state.board, state.selectedPiecePos).piece
           commit('movePiece', {piece: selectedPiece, to: position})
 
+          // Se este movimento fez com que o player atual fique sem peças
+          // (pois todas foram oferecidas ao oponente), termina o jogo.
+          var remainingPieces = _.filter(state.allPieces, p => p.color == getters.activePlayer.color)
+          if ( remainingPieces.length < 1 )
+            commit('gameOver')
+
           // Reseta os moves
           commit('setMoves', [])
+
 
           // Muda o player atual
           var newIndex = (state.activePlayerIndex + 1) % state.players.length
